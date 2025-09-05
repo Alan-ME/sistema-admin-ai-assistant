@@ -1,0 +1,69 @@
+@startuml Despliegue_SIGE
+!theme plain
+title Sistema Integral de Gestión Educativa - Diagrama de Despliegue
+
+node "Cliente Web" {
+    artifact "Navegador Web" as Browser
+    artifact "Dispositivo Móvil" as Mobile
+}
+
+cloud "Internet" as Internet
+
+node "Servidor Web" {
+    artifact "Apache HTTP Server" as Apache
+    artifact "PHP 8.2+" as PHP
+    artifact "Sistema SIGE" as SIGE {
+        component [Controllers] as Controllers
+        component [Services] as Services
+        component [Models] as Models
+        component [Mappers] as Mappers
+    }
+}
+
+node "Servidor de Base de Datos" {
+    database "MySQL 8.0+" as MySQL {
+        [sistema_admin_eest2] as DB
+    }
+}
+
+node "Servidor de Cache" {
+    artifact "Redis" as Redis
+}
+
+node "Servidor de Archivos" {
+    artifact "Sistema de Archivos" as FileSystem {
+        [Logs] as Logs
+        [Uploads] as Uploads
+        [Reports] as Reports
+    }
+}
+
+node "Servidor de Backup" {
+    artifact "Backup Automático" as Backup
+}
+
+' Conexiones de despliegue
+Browser --> Internet
+Mobile --> Internet
+Internet --> Apache
+
+Apache --> PHP
+PHP --> SIGE
+
+SIGE --> MySQL
+SIGE --> Redis
+SIGE --> FileSystem
+
+MySQL --> Backup
+FileSystem --> Backup
+
+' Detalles de configuración
+note right of Apache : "Configuración:\n• Virtual Host\n• SSL/TLS\n• Compresión GZIP\n• Cache Headers"
+note right of PHP : "Configuración:\n• OPcache habilitado\n• Memory limit: 512M\n• Max execution time: 30s\n• Error reporting: Production"
+note right of MySQL : "Configuración:\n• InnoDB Engine\n• UTF8MB4 charset\n• Connection pooling\n• Query cache"
+note right of Redis : "Configuración:\n• Persistencia RDB\n• Memory limit: 1GB\n• Expire policies\n• Security: AUTH"
+
+' Requisitos del sistema
+note bottom : "REQUISITOS MÍNIMOS:\n• Servidor: 4 CPU, 8GB RAM, 100GB SSD\n• PHP: 8.2+ con extensiones PDO, Redis, GD\n• MySQL: 8.0+ con InnoDB\n• Apache: 2.4+ con mod_rewrite\n• Redis: 6.0+ para cache\n• SSL: Certificado válido"
+
+@enduml

@@ -1,0 +1,4 @@
+{"timestamp":"2025-09-04 01:45:10","tipo":"AUDIT","accion":"CREATE","entidad":"estudiante","entidad_id":123,"ip":"0.0.0.0","usuario_id":null,"datos":{"nombre":"Juan","apellido":"P\u00e9rez"}}
+{"timestamp":"2025-09-04 01:45:10","tipo":"AUDIT","accion":"UPDATE","entidad":"profesor","entidad_id":456,"ip":"0.0.0.0","usuario_id":null,"datos":{"campo":"email","valor_anterior":"old@email.com","valor_nuevo":"new@email.com"}}
+{"timestamp":"2025-09-04 01:45:21","tipo":"AUDIT","accion":"CREATE","entidad":"estudiante","entidad_id":123,"ip":"::1","usuario_id":1,"datos":{"nombre":"Juan","apellido":"P\u00e9rez"}}
+{"timestamp":"2025-09-04 01:45:21","tipo":"AUDIT","accion":"UPDATE","entidad":"profesor","entidad_id":456,"ip":"::1","usuario_id":1,"datos":{"campo":"email","valor_anterior":"old@email.com","valor_nuevo":"new@email.com"}}

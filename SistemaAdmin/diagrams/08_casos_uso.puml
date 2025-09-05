@@ -1,0 +1,180 @@
+@startuml Casos_Uso_SIGE
+!theme plain
+title Sistema Integral de Gestión Educativa - Casos de Uso
+
+left to right direction
+
+actor "Administrador" as Admin
+actor "Directivo" as Directivo
+actor "Profesor" as Profesor
+actor "Preceptor" as Preceptor
+actor "Secretario" as Secretario
+
+rectangle "Sistema Integral de Gestión Educativa" {
+
+    package "Autenticación y Autorización" {
+        usecase "Iniciar Sesión" as UC01
+        usecase "Cerrar Sesión" as UC02
+        usecase "Cambiar Contraseña" as UC03
+        usecase "Gestionar Usuarios" as UC04
+    }
+
+    package "Gestión de Estudiantes" {
+        usecase "Registrar Estudiante" as UC05
+        usecase "Consultar Ficha Estudiante" as UC06
+        usecase "Actualizar Datos Estudiante" as UC07
+        usecase "Buscar Estudiantes" as UC08
+        usecase "Gestionar Responsables" as UC09
+        usecase "Registrar Contactos Emergencia" as UC10
+    }
+
+    package "Gestión Académica" {
+        usecase "Gestionar Cursos" as UC11
+        usecase "Gestionar Materias" as UC12
+        usecase "Gestionar Especialidades" as UC13
+        usecase "Configurar Materias Previas" as UC14
+        usecase "Gestionar Horarios" as UC15
+    }
+
+    package "Sistema de Evaluación" {
+        usecase "Cargar Notas" as UC16
+        usecase "Consultar Notas" as UC17
+        usecase "Calcular Promedios" as UC18
+        usecase "Generar Boletines" as UC19
+        usecase "Validar Correlativas" as UC20
+    }
+
+    package "Gestión Disciplinaria" {
+        usecase "Registrar Llamado Atención" as UC21
+        usecase "Consultar Llamados" as UC22
+        usecase "Aplicar Sanciones" as UC23
+        usecase "Generar Reportes Disciplina" as UC24
+    }
+
+    package "Gestión de Profesores" {
+        usecase "Registrar Profesor" as UC25
+        usecase "Consultar Ficha Profesor" as UC26
+        usecase "Asignar Materias" as UC27
+        usecase "Gestionar Equipo Directivo" as UC28
+    }
+
+    package "Reportes y Analytics" {
+        usecase "Ver Dashboard" as UC29
+        usecase "Generar Reportes" as UC30
+        usecase "Exportar Datos" as UC31
+        usecase "Consultar Estadísticas" as UC32
+    }
+}
+
+' Relaciones de actores con casos de uso
+Admin --> UC01
+Admin --> UC02
+Admin --> UC03
+Admin --> UC04
+Admin --> UC05
+Admin --> UC06
+Admin --> UC07
+Admin --> UC08
+Admin --> UC09
+Admin --> UC10
+Admin --> UC11
+Admin --> UC12
+Admin --> UC13
+Admin --> UC14
+Admin --> UC15
+Admin --> UC16
+Admin --> UC17
+Admin --> UC18
+Admin --> UC19
+Admin --> UC20
+Admin --> UC21
+Admin --> UC22
+Admin --> UC23
+Admin --> UC24
+Admin --> UC25
+Admin --> UC26
+Admin --> UC27
+Admin --> UC28
+Admin --> UC29
+Admin --> UC30
+Admin --> UC31
+Admin --> UC32
+
+Directivo --> UC01
+Directivo --> UC02
+Directivo --> UC06
+Directivo --> UC08
+Directivo --> UC11
+Directivo --> UC12
+Directivo --> UC13
+Directivo --> UC15
+Directivo --> UC16
+Directivo --> UC17
+Directivo --> UC18
+Directivo --> UC19
+Directivo --> UC21
+Directivo --> UC22
+Directivo --> UC23
+Directivo --> UC25
+Directivo --> UC26
+Directivo --> UC27
+Directivo --> UC28
+Directivo --> UC29
+Directivo --> UC30
+Directivo --> UC31
+Directivo --> UC32
+
+Profesor --> UC01
+Profesor --> UC02
+Profesor --> UC06
+Profesor --> UC08
+Profesor --> UC16
+Profesor --> UC17
+Profesor --> UC18
+Profesor --> UC19
+Profesor --> UC21
+Profesor --> UC22
+Profesor --> UC26
+Profesor --> UC29
+Profesor --> UC32
+
+Preceptor --> UC01
+Preceptor --> UC02
+Preceptor --> UC06
+Preceptor --> UC08
+Preceptor --> UC21
+Preceptor --> UC22
+Preceptor --> UC23
+Preceptor --> UC29
+Preceptor --> UC32
+
+Secretario --> UC01
+Secretario --> UC02
+Secretario --> UC05
+Secretario --> UC06
+Secretario --> UC07
+Secretario --> UC08
+Secretario --> UC09
+Secretario --> UC10
+Secretario --> UC25
+Secretario --> UC26
+Secretario --> UC29
+Secretario --> UC30
+Secretario --> UC31
+
+' Relaciones entre casos de uso
+UC05 ..> UC09 : include
+UC05 ..> UC10 : include
+UC16 ..> UC20 : include
+UC19 ..> UC18 : include
+UC21 ..> UC23 : extend
+UC30 ..> UC31 : include
+
+' Notas sobre roles
+note right of Admin : "Acceso completo al sistema\nGestión de usuarios y configuración"
+note right of Directivo : "Acceso a gestión académica\ny reportes ejecutivos"
+note right of Profesor : "Acceso a evaluación\ny seguimiento de estudiantes"
+note right of Preceptor : "Acceso a disciplina\ny seguimiento estudiantil"
+note right of Secretario : "Acceso a gestión administrativa\ny generación de reportes"
+
+@enduml
