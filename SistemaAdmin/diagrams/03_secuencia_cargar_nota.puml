@@ -1,0 +1,80 @@
+@startuml Secuencia_Cargar_Nota
+!theme plain
+title Comparación: Cargar Nota - Arquitectura Actual vs Propuesta
+
+== ARQUITECTURA ACTUAL (Problemática) ==
+
+actor "Usuario" as User
+participant "notas.php" as NotasPHP
+participant "Database" as DB
+database "MySQL" as MySQL
+
+User -> NotasPHP: POST /notas.php
+activate NotasPHP
+
+NotasPHP -> NotasPHP: Validar $_POST
+NotasPHP -> NotasPHP: Construir SQL manualmente
+NotasPHP -> DB: query("INSERT INTO notas...")
+activate DB
+DB -> MySQL: Ejecutar SQL
+MySQL --> DB: Resultado
+deactivate DB
+DB --> NotasPHP: Resultado
+
+alt Error en BD
+    NotasPHP -> NotasPHP: echo "Error: " . $e->getMessage()
+    NotasPHP -> User: Mostrar error en HTML
+else Éxito
+    NotasPHP -> NotasPHP: echo "Nota cargada correctamente"
+    NotasPHP -> User: Mostrar éxito en HTML
+end
+
+deactivate NotasPHP
+
+note right of NotasPHP : "Problemas:\n- Lógica mezclada\n- Validación manual\n- Manejo de errores básico\n- No reutilizable"
+
+== ARQUITECTURA PROPUESTA (Mejorada) ==
+
+actor "Usuario" as User2
+participant "NotasController" as NotasCtrl
+participant "ServicioNotas" as ServNotas
+participant "NotaMapper" as NotaMapper
+participant "Database" as DB2
+database "MySQL" as MySQL2
+
+User2 -> NotasCtrl: POST /notas/cargar
+activate NotasCtrl
+
+NotasCtrl -> NotasCtrl: Validar Request
+NotasCtrl -> ServNotas: cargarNota(estudianteId, materiaId, valor, bimestre)
+activate ServNotas
+
+ServNotas -> ServNotas: Crear objeto Nota
+note right of ServNotas : "Validación automática\nen constructor de Nota"
+
+alt Nota inválida
+    ServNotas -> ServNotas: throw CalificacionInvalidaException
+    ServNotas --> NotasCtrl: Exception
+    NotasCtrl -> NotasCtrl: Manejar excepción
+    NotasCtrl -> User2: Error 400 + mensaje
+else Nota válida
+    ServNotas -> NotaMapper: save(nota)
+    activate NotaMapper
+    NotaMapper -> DB2: query("INSERT INTO notas...")
+    activate DB2
+    DB2 -> MySQL2: Ejecutar SQL
+    MySQL2 --> DB2: Resultado
+    deactivate DB2
+    DB2 --> NotaMapper: Resultado
+    deactivate NotaMapper
+    NotaMapper --> ServNotas: void
+    ServNotas --> NotasCtrl: void
+    NotasCtrl -> User2: 201 Created + JSON
+end
+
+deactivate ServNotas
+deactivate NotasCtrl
+
+note right of NotasCtrl : "Beneficios:\n- Separación de responsabilidades\n- Validación automática\n- Manejo de errores robusto\n- Fácil testing\n- Reutilizable"
+
+@enduml

@@ -1,0 +1,157 @@
+@startuml Interfaces_TDA_SIGE
+!theme plain
+title Tipos de Datos Abstractos (TDAs) - Interfaces de Servicios
+
+package "Interfaces de Servicios (TDAs)" {
+
+    interface "IServicioEstudiantes" as IServEst {
+        +buscarPorId(id: int): ?Estudiante
+        +buscarPorDni(dni: string): ?Estudiante
+        +buscarPorCurso(cursoId: int): array<Estudiante>
+        +buscarPorNombre(nombre: string): array<Estudiante>
+        +crear(estudiante: Estudiante): int
+        +actualizar(estudiante: Estudiante): void
+        +eliminar(id: int): void
+        +obtenerEstadisticas(): array<string, mixed>
+        +obtenerCumpleaneros(fecha: DateTime): array<Estudiante>
+    }
+
+    interface "IServicioNotas" as IServNotas {
+        +cargarNota(estudianteId: int, materiaId: int, valor: float, bimestre: string): void
+        +obtenerNotasEstudiante(estudianteId: int): array<Nota>
+        +obtenerNotasPorMateria(materiaId: int): array<Nota>
+        +obtenerPromedioEstudiante(estudianteId: int): float
+        +obtenerPromedioPorMateria(estudianteId: int, materiaId: int): float
+        +obtenerBoletin(estudianteId: int): Boletin
+        +obtenerEstadisticasNotas(): array<string, mixed>
+        +validarCorrelativas(estudianteId: int, materiaId: int): bool
+    }
+
+    interface "IServicioProfesores" as IServProf {
+        +buscarPorId(id: int): ?Profesor
+        +buscarPorDni(dni: string): ?Profesor
+        +buscarPorEspecialidad(especialidad: string): array<Profesor>
+        +crear(profesor: Profesor): int
+        +actualizar(profesor: Profesor): void
+        +eliminar(id: int): void
+        +asignarMateria(profesorId: int, materiaId: int): void
+        +obtenerMateriasAsignadas(profesorId: int): array<Materia>
+        +obtenerEstadisticas(): array<string, mixed>
+    }
+
+    interface "IServicioLlamados" as IServLlamados {
+        +registrarLlamado(estudianteId: int, motivo: string, descripcion: string): int
+        +obtenerLlamadosEstudiante(estudianteId: int): array<LlamadoAtencion>
+        +obtenerLlamadosPorFecha(fechaDesde: DateTime, fechaHasta: DateTime): array<LlamadoAtencion>
+        +obtenerLlamadosPorCurso(cursoId: int): array<LlamadoAtencion>
+        +aplicarSancion(llamadoId: int, sancion: string): void
+        +obtenerEstadisticasDisciplina(): array<string, mixed>
+        +exportarReporte(formato: string): string
+    }
+
+    interface "IServicioCursos" as IServCursos {
+        +buscarPorId(id: int): ?Curso
+        +buscarPorAnio(anio: int): array<Curso>
+        +buscarPorEspecialidad(especialidadId: int): array<Curso>
+        +crear(curso: Curso): int
+        +actualizar(curso: Curso): void
+        +eliminar(id: int): void
+        +obtenerEstudiantesPorCurso(cursoId: int): array<Estudiante>
+        +obtenerEstadisticasPorCurso(): array<string, mixed>
+    }
+
+    interface "IServicioAutenticacion" as IServAuth {
+        +autenticar(username: string, password: string): bool
+        +obtenerUsuarioActual(): ?Usuario
+        +verificarPermiso(permiso: string): bool
+        +cambiarPassword(usuarioId: int, nuevoPassword: string): void
+        +cerrarSesion(): void
+        +obtenerRoles(): array<string>
+        +asignarRol(usuarioId: int, rol: string): void
+    }
+}
+
+package "Interfaces de Persistencia (Mappers)" {
+
+    interface "IEstudianteMapper" as IEstMapper {
+        +find(id: int): ?Estudiante
+        +findByDni(dni: string): ?Estudiante
+        +findByCurso(cursoId: int): array<Estudiante>
+        +save(estudiante: Estudiante): int
+        +update(estudiante: Estudiante): void
+        +delete(id: int): void
+        +exists(id: int): bool
+    }
+
+    interface "INotaMapper" as INotaMapper {
+        +find(id: int): ?Nota
+        +findByEstudiante(estudianteId: int): array<Nota>
+        +findByMateria(materiaId: int): array<Nota>
+        +findByEstudianteYMateria(estudianteId: int, materiaId: int): array<Nota>
+        +save(nota: Nota): int
+        +update(nota: Nota): void
+        +delete(id: int): void
+    }
+
+    interface "IProfesorMapper" as IProfMapper {
+        +find(id: int): ?Profesor
+        +findByDni(dni: string): ?Profesor
+        +findByEspecialidad(especialidad: string): array<Profesor>
+        +save(profesor: Profesor): int
+        +update(profesor: Profesor): void
+        +delete(id: int): void
+    }
+
+    interface "ILlamadoMapper" as ILlamadoMapper {
+        +find(id: int): ?LlamadoAtencion
+        +findByEstudiante(estudianteId: int): array<LlamadoAtencion>
+        +findByFecha(fechaDesde: DateTime, fechaHasta: DateTime): array<LlamadoAtencion>
+        +save(llamado: LlamadoAtencion): int
+        +update(llamado: LlamadoAtencion): void
+        +delete(id: int): void
+    }
+}
+
+package "Implementaciones Concretas" {
+
+    class "ServicioEstudiantesMySQL" as ServEstMySQL {
+        -estudianteMapper: IEstudianteMapper
+        +__construct(mapper: IEstudianteMapper)
+        +buscarPorId(id: int): ?Estudiante
+        +buscarPorDni(dni: string): ?Estudiante
+        +crear(estudiante: Estudiante): int
+        +actualizar(estudiante: Estudiante): void
+    }
+
+    class "ServicioNotasMySQL" as ServNotasMySQL {
+        -notaMapper: INotaMapper
+        -estudianteMapper: IEstudianteMapper
+        +__construct(notaMapper: INotaMapper, estudianteMapper: IEstudianteMapper)
+        +cargarNota(estudianteId: int, materiaId: int, valor: float, bimestre: string): void
+        +obtenerPromedioEstudiante(estudianteId: int): float
+    }
+
+    class "EstudianteMapperMySQL" as EstMapperMySQL {
+        -db: PDO
+        +__construct(db: PDO)
+        +find(id: int): ?Estudiante
+        +save(estudiante: Estudiante): int
+    }
+}
+
+' Relaciones de implementación
+IServEst <|.. ServEstMySQL
+IServNotas <|.. ServNotasMySQL
+IEstMapper <|.. EstMapperMySQL
+
+' Dependencias
+ServEstMySQL --> IEstMapper
+ServNotasMySQL --> INotaMapper
+ServNotasMySQL --> IEstMapper
+
+' Notas sobre los TDAs
+note right of IServEst : "TDA: Define QUÉ operaciones\nse pueden realizar sobre\nestudiantes, no CÓMO"
+note right of IEstMapper : "TDA: Define QUÉ operaciones\n de persistencia están\n disponibles"
+note right of ServEstMySQL : "TDC: Implementación concreta\nusando MySQL como BD"
+
+@enduml
